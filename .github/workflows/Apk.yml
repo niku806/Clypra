@@ -5,8 +5,8 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - master
       - main
+      - master
 
 permissions:
   contents: read
@@ -31,17 +31,20 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
+          cache: gradle
 
-      - name: Setup Android SDK
+      - name: Install Android SDK packages
         uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
 
-      - name: Install dependencies
+      - name: Install npm dependencies
         run: npm ci
 
-      - name: Build web application
+      - name: Build web app
         run: npm run build
 
-      - name: Prepare Capacitor Android project
+      - name: Prepare Android project
         run: |
           if [ ! -d android ]; then
             npx cap add android
@@ -61,4 +64,3 @@ jobs:
           path: android/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 7
-          
